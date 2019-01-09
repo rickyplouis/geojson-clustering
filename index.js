@@ -1,6 +1,7 @@
 const kClusters = 5;
 const data = require('./addresses');
 const getRandomInt = require('./getRandomInt');
+let finalCentroids = [];
 
 const euclideanDistance = (coordA, coordB) => {
   return Math.sqrt(Math.pow(coordA.lat - coordB.lat, 2) + Math.pow(coordA.lng - coordB.lng, 2))
@@ -56,16 +57,37 @@ const makeClusters = (centroids, data) => {
 
 const getMeanCentroid = (data) => {
   const lat = data.reduce((sum, acc) => acc.lat + sum, 0) / data.length;
-  const lng = data.reduce((sum, acc) => acc.lng + sum, 0) / data.length
+  const lng = data.reduce((sum, acc) => acc.lng + sum, 0) / data.length;
   return {
     lat,
     lng
   };
 }
 
+const clustersEqual = (first, second) => {
+  if (first.length !== second.length) {
+    return false;
+  }
+  for (var x = 0; x < first.length; x += 1) {
+    for (var y = 0; y < second.lenfth; y += 1) {
+      if (first[x].lat !== second[y].lat) {
+        return false;
+      }
+      if (first[x].lng !== second[y].lng) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 let nCentroids = initializeCentroids(kClusters, data);
+let yCentroids = initializeCentroids(kClusters, data);
 let testClusters = makeClusters(nCentroids, data);
+let testThree = testClusters;
+let testTwo = makeClusters(yCentroids, data);
 
 let mean = getMeanCentroid(nCentroids);
-console.log('nCentroids', nCentroids);
+console.log('clustersEqual', clustersEqual(testClusters[0], testTwo[0]));
+console.log('clustersEqual', clustersEqual(testClusters[0], testThree[0]));
 console.log('mean', mean);
