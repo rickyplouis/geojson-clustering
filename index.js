@@ -1,4 +1,4 @@
-const k = 2;
+const kClusters = 10;
 const data = require('./addresses');
 const getRandomInt = require('./getRandomInt');
 
@@ -54,7 +54,7 @@ const makeClusters = (centroids, data) => {
   // after all iteration assigned dp to indexOf(centroid)
 }
 
-let nCentroids = initializeCentroids(k, data);
+let nCentroids = initializeCentroids(kClusters, data);
 let testClusters = makeClusters(nCentroids, data);
 console.log('nCentroids', nCentroids);
 console.log('testClusters', testClusters);
