@@ -1,4 +1,4 @@
-const kClusters = 10;
+const kClusters = 5;
 const data = require('./addresses');
 const getRandomInt = require('./getRandomInt');
 
@@ -54,7 +54,18 @@ const makeClusters = (centroids, data) => {
   // after all iteration assigned dp to indexOf(centroid)
 }
 
+const getMeanCentroid = (data) => {
+  const lat = data.reduce((sum, acc) => acc.lat + sum, 0) / data.length;
+  const lng = data.reduce((sum, acc) => acc.lng + sum, 0) / data.length
+  return {
+    lat,
+    lng
+  };
+}
+
 let nCentroids = initializeCentroids(kClusters, data);
 let testClusters = makeClusters(nCentroids, data);
+
+let mean = getMeanCentroid(nCentroids);
 console.log('nCentroids', nCentroids);
-console.log('testClusters', testClusters);
+console.log('mean', mean);
