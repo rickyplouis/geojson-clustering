@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const getRandomFloat = require('./getRandomFloat');
-const n = 100
+const numOfAddresses = 100
 
 // chicago 41.8781° N, 87.6298° W
 // st louis 38.6270° N, 90.1994° W
@@ -12,7 +12,7 @@ const maxLng = -87.6298;
 const minLng = -90.1994;
 let data = [];
 
-for (var x = 0; x < n; x++) {
+for (var x = 0; x < numOfAddresses; x++) {
   const datapoint = {
         "geometry": {
             "type": "Point",

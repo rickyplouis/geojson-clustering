@@ -1,5 +1,5 @@
 const fs = require('fs');
-const kClusters = 3;
+const kClusters = 6;
 const addresses = require('./addresses');
 const { data, minLat, minLng, maxLat, maxLng } = addresses;
 const getRandomFloat = require('./getRandomFloat');
@@ -74,18 +74,17 @@ const makeCentroids = (cluster) => {
 }
 
 const centroidsEqual = (first, second) => {
-  console.log('centroidsEqual');
+  console.log('running centroidsEqual');
+  //console.log('centroidsEqual');
   if (first.length !== second.length) {
     return false;
   }
-  for (var x = 0; x < first.length; x += 1) {
-    for (var y = 0; y < second.lenth; y += 1) {
-      if (getLat(first[x]) !== getLat(second[y])) {
-        return false;
-      }
-      if (getLng(first[x]) !== getLng(second[y])) {
-        return false;
-      }
+  for (let x = 0; x < first.length; x += 1) {
+    if (getLat(first[x]) !== getLat(second[x])) {
+      return false;
+    }
+    if (getLng(first[x]) !== getLng(second[x])) {
+      return false;
     }
   }
   return true;
