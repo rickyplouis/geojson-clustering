@@ -1,28 +1,33 @@
+const fs = require('fs');
 const kClusters = 10;
-const data = require('./addresses');
+const addresses = require('./addresses');
+const { data, minLat, minLng, maxLat, maxLng } = addresses;
 const getRandomFloat = require('./getRandomFloat');
 
+const getLng = (coord) => coord.geometry.coordinates[0]
+const getLat = (coord) => coord.geometry.coordinates[1]
+
 const euclideanDistance = (coordA, coordB) => {
-  return Math.sqrt(Math.pow(coordA.lat - coordB.lat, 2) + Math.pow(coordA.lng - coordB.lng, 2))
-}
-
-const getMin = (coords, prop) => {
-  return coords.reduce((min, acc) => acc[prop] < min ? acc[prop] : min, coords[0][prop])
-}
-
-const getMax = (coords, prop) => {
-  return coords.reduce((max, acc) => acc[prop] > max ? acc[prop] : max, coords[0][prop])
+  let latA = getLat(coordA)
+  let latB = getLat(coordB);
+  let lngA = getLng(coordA);
+  let lngB = getLng(coordB);
+  return Math.sqrt( Math.pow(latA - latB, 2) + Math.pow(lngA - lngB, 2) )
 }
 
 const initializeCentroids = (n, data) => {
   const centroids = [];
   for ( var x = 0; x < n; x += 1) {
-    centroids.push(
-      {
-        lat: getRandomFloat(getMin(data, 'lat'), getMax(data, 'lat')),
-        lng: getRandomFloat(getMin(data, 'lng'), getMax(data, 'lng')),
+    const datapoint = {
+          "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  getRandomFloat(minLng, maxLng),
+                  getRandomFloat(minLat, maxLat)
+              ]
+          },
       }
-    )
+    centroids.push(datapoint);
   }
   return centroids;
 }
@@ -36,7 +41,9 @@ const makeClusters = (centroids, data) => {
     let minCentroidIndex = 0;
     for (let y = 0; y < centroids.length; y += 1) {
       //change index of closest centroid
-      if (euclideanDistance(data[x], centroids[minCentroidIndex]) > euclideanDistance(data[x], centroids[y])) {
+      let firstDist = euclideanDistance(data[x], centroids[minCentroidIndex])
+      let secondDist = euclideanDistance(data[x], centroids[y]);
+      if ( firstDist > secondDist) {
         minCentroidIndex = y;
       }
       // reached end of array, put data point in cluster of closest centroid
@@ -50,30 +57,33 @@ const makeClusters = (centroids, data) => {
 
 const makeCentroids = (cluster) => {
   let final =  cluster.map((clust) => {
-    console.log('clust', clust);
-    console.log('clust.length', clust.length);
-    const lat = clust.reduce((sum, acc) => acc.lat + sum, 0) / clust.length;
-    const lng = clust.reduce((sum, acc) => acc.lng + sum, 0) / clust.length;
-    return {
-      lat,
-      lng
-    };
+    const lat = clust.reduce((sum, acc) => getLat(acc) + sum, 0) / clust.length;
+    const lng = clust.reduce((sum, acc) => getLng(acc) + sum, 0) / clust.length;
+    const datapoint = {
+          "geometry": {
+              "type": "Point",
+              "coordinates": [
+                lng,
+                lat,
+              ]
+          },
+      }
+    return datapoint;
   })
-  console.log('centroids', final);
   return final
-
 }
 
 const centroidsEqual = (first, second) => {
+  console.log('centroidsEqual');
   if (first.length !== second.length) {
     return false;
   }
   for (var x = 0; x < first.length; x += 1) {
     for (var y = 0; y < second.lenth; y += 1) {
-      if (first[x].lat !== second[y].lat) {
+      if (getLat(first[x]) !== getLat(second[y])) {
         return false;
       }
-      if (first[x].lng !== second[y].lng) {
+      if (getLng(first[x]) !== getLng(second[y])) {
         return false;
       }
     }
@@ -92,19 +102,16 @@ const clusterAnalysis = (k, dataset) => {
     nextCentroid = makeCentroids(firstCluster);
     nextCluster = makeClusters(nextCentroid, dataset)
   }
-  let final = sortClusterByLat(nextCluster);
-  console.log('final cluster', final);
-  return final
-
+  return nextCluster
 }
 
 const sortClusterByLat = (clusters) => {
   return clusters.map((cluster) => {
     return cluster.sort((a, b) => {
-      if (a.lat < b.lat) {
+      if (getLat(a) < getLat(b)) {
         return -1
       }
-      if (a.lat > b.lat) {
+      if (getLat(a) > getLat(b)) {
         return 1;
       }
       return 0;
@@ -112,4 +119,38 @@ const sortClusterByLat = (clusters) => {
   })
 }
 
-clusterAnalysis(kClusters, data);
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+let newClusters = clusterAnalysis(kClusters, data);
+
+let json = {
+  "type": "FeatureCollection",
+  "features": []
+}
+
+let colors = [];
+
+for (var x = 0; x < kClusters; x++) {
+  colors.push(getRandomColor());
+}
+
+newClusters.map((cluster, index) => {
+  if (cluster.length > 0) {
+    for (let dp of cluster) {
+      let rndColor = getRandomColor();
+      dp.properties['marker-color'] = colors[index];
+      json.features.push(dp);
+    }
+  }
+})
+
+fs.writeFile('test.geojson', JSON.stringify(json), (err, data) => {
+  if (err) throw err;
+})

@@ -2,14 +2,38 @@ const fs = require('fs');
 
 const getRandomFloat = require('./getRandomFloat');
 const n = 100
-const maxLat = 30;
-const maxLng = 30;
-const minLat = 0;
-const minLng = 0;
+
+// chicago 41.8781° N, 87.6298° W
+// st louis 38.6270° N, 90.1994° W
+const maxLat = 41.8781;
+const minLat = 38.6270;
+
+const maxLng = -87.6298;
+const minLng = -90.1994;
 let data = [];
 
 for (var x = 0; x < n; x++) {
-  data.push({lat: getRandomFloat(minLat, maxLat), lng: getRandomFloat(minLng, maxLng)})
+  const datapoint = {
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                getRandomFloat(minLng, maxLng),
+                getRandomFloat(minLat, maxLat)
+            ]
+        },
+        "type": "Feature",
+        "properties": {
+          "title": "index of " + x,
+          "marker-symbol": 'rail-metro',
+        }
+    }
+  data.push(datapoint)
 }
 
-module.exports = data;
+module.exports = {
+  maxLat,
+  minLat,
+  maxLng,
+  minLng,
+  data
+};
