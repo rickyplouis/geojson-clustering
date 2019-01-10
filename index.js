@@ -1,5 +1,5 @@
 const fs = require('fs');
-const kClusters = 10;
+const kClusters = 3;
 const addresses = require('./addresses');
 const { data, minLat, minLng, maxLat, maxLng } = addresses;
 const getRandomFloat = require('./getRandomFloat');
