@@ -1,7 +1,6 @@
-const kClusters = 5;
+const kClusters = 3;
 const data = require('./addresses');
 const getRandomInt = require('./getRandomInt');
-let finalCentroids = [];
 
 const euclideanDistance = (coordA, coordB) => {
   return Math.sqrt(Math.pow(coordA.lat - coordB.lat, 2) + Math.pow(coordA.lng - coordB.lng, 2))
@@ -47,29 +46,30 @@ const makeClusters = (centroids, data) => {
     }
   }
   return clusters;
-  // TODO
-  // for each datapoint
-  // for each centroid
-  // if distance(dpX, c) < distance(dPX, c)
-  // minCentroid = c
-  // after all iteration assigned dp to indexOf(centroid)
 }
 
-const getMeanCentroid = (data) => {
-  const lat = data.reduce((sum, acc) => acc.lat + sum, 0) / data.length;
-  const lng = data.reduce((sum, acc) => acc.lng + sum, 0) / data.length;
-  return {
-    lat,
-    lng
-  };
+const makeCentroids = (cluster) => {
+  let final =  cluster.map((clust) => {
+    console.log('clust', clust);
+    console.log('clust.length', clust.length);
+    const lat = clust.reduce((sum, acc) => acc.lat + sum, 0) / clust.length;
+    const lng = clust.reduce((sum, acc) => acc.lng + sum, 0) / clust.length;
+    return {
+      lat,
+      lng
+    };
+  })
+  console.log('centroids', final);
+  return final
+
 }
 
-const clustersEqual = (first, second) => {
+const centroidsEqual = (first, second) => {
   if (first.length !== second.length) {
     return false;
   }
   for (var x = 0; x < first.length; x += 1) {
-    for (var y = 0; y < second.lenfth; y += 1) {
+    for (var y = 0; y < second.lenth; y += 1) {
       if (first[x].lat !== second[y].lat) {
         return false;
       }
@@ -81,13 +81,35 @@ const clustersEqual = (first, second) => {
   return true;
 }
 
-let nCentroids = initializeCentroids(kClusters, data);
-let yCentroids = initializeCentroids(kClusters, data);
-let testClusters = makeClusters(nCentroids, data);
-let testThree = testClusters;
-let testTwo = makeClusters(yCentroids, data);
+const clusterAnalysis = (k, dataset) => {
+  let firstCentroid = initializeCentroids(k, dataset);
+  let firstCluster = makeClusters(firstCentroid, dataset);
+  let nextCentroid = makeCentroids(firstCluster);
+  let nextCluster = makeClusters(nextCentroid, dataset);
+  while (!centroidsEqual(firstCentroid, nextCentroid)) {
+    firstCentroid = nextCentroid.map((centroid) => Object.assign({}, centroid));
+    firstCluster = makeClusters(firstCentroid, dataset);
+    nextCentroid = makeCentroids(firstCluster);
+    nextCluster = makeClusters(nextCentroid, dataset)
+  }
+  let final = sortClusterByLat(nextCluster);
+  console.log('final cluster', final);
+  return final
 
-let mean = getMeanCentroid(nCentroids);
-console.log('clustersEqual', clustersEqual(testClusters[0], testTwo[0]));
-console.log('clustersEqual', clustersEqual(testClusters[0], testThree[0]));
-console.log('mean', mean);
+}
+
+const sortClusterByLat = (clusters) => {
+  return clusters.map((cluster) => {
+    return cluster.sort((a, b) => {
+      if (a.lat < b.lat) {
+        return -1
+      }
+      if (a.lat > b.lat) {
+        return 1;
+      }
+      return 0;
+    })
+  })
+}
+
+clusterAnalysis(kClusters, data);
