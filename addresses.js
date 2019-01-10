@@ -24,7 +24,7 @@ for (var x = 0; x < n; x++) {
         "type": "Feature",
         "properties": {
           "title": "index of " + x,
-          "marker-symbol": 'rail-metro',
+          "marker-symbol": 'suitcase',
         }
     }
   data.push(datapoint)
