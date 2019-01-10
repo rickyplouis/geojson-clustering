@@ -1,6 +1,6 @@
-const kClusters = 3;
+const kClusters = 10;
 const data = require('./addresses');
-const getRandomInt = require('./getRandomInt');
+const getRandomFloat = require('./getRandomFloat');
 
 const euclideanDistance = (coordA, coordB) => {
   return Math.sqrt(Math.pow(coordA.lat - coordB.lat, 2) + Math.pow(coordA.lng - coordB.lng, 2))
@@ -19,8 +19,8 @@ const initializeCentroids = (n, data) => {
   for ( var x = 0; x < n; x += 1) {
     centroids.push(
       {
-        lat: getRandomInt(getMin(data, 'lat'), getMax(data, 'lat')),
-        lng: getRandomInt(getMin(data, 'lng'), getMax(data, 'lng')),
+        lat: getRandomFloat(getMin(data, 'lat'), getMax(data, 'lat')),
+        lng: getRandomFloat(getMin(data, 'lng'), getMax(data, 'lng')),
       }
     )
   }
