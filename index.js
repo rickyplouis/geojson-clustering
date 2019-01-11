@@ -1,11 +1,24 @@
 const fs = require('fs');
-const kClusters = 9;
+const kClusters = 5;
+const maxIterations = 100;
 const addresses = require('./addresses');
 const { data, minLat, minLng, maxLat, maxLng } = addresses;
 const getRandomFloat = require('./getRandomFloat');
 
-const getLng = (coord) => coord.geometry.coordinates[0]
-const getLat = (coord) => coord.geometry.coordinates[1]
+const getLng = coord => coord.geometry.coordinates[0]
+const getLat = coord => coord.geometry.coordinates[1];
+
+const makeDatapoint = (lat, lng) => {
+  return {
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            lng,
+            lat
+        ]
+    }
+  }
+}
 
 const euclideanDistance = (coordA, coordB) => {
   let latA = getLat(coordA)
@@ -15,24 +28,20 @@ const euclideanDistance = (coordA, coordB) => {
   return Math.sqrt( Math.pow(latA - latB, 2) + Math.pow(lngA - lngB, 2) )
 }
 
+const makeRandomCentroid = (minLat, minLng, maxLat, maxLng) => {
+  return makeDatapoint(getRandomFloat(minLat, maxLat), getRandomFloat(minLng, maxLng))
+}
+
 const initializeCentroids = (n, data) => {
   const centroids = [];
   for ( var x = 0; x < n; x += 1) {
-    const datapoint = {
-          "geometry": {
-              "type": "Point",
-              "coordinates": [
-                  getRandomFloat(minLng, maxLng),
-                  getRandomFloat(minLat, maxLat)
-              ]
-          },
-      }
-    centroids.push(datapoint);
+    centroids.push(makeRandomCentroid(minLat, minLng, maxLat, maxLng))
   }
   return centroids;
 }
 
 const makeClusters = (centroids, data) => {
+  console.time('makeClusters');
   let clusters = [];
   for (let n = 0; n < centroids.length; n += 1) {
     clusters.push([]);
