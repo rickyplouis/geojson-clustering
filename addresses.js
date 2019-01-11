@@ -1,15 +1,18 @@
 const fs = require('fs');
 
 const getRandomFloat = require('./getRandomFloat');
-const numOfAddresses = 1000
+const numOfAddresses = 50
 
-// chicago 41.8781° N, 87.6298° W
-// st louis 38.6270° N, 90.1994° W
-const maxLat = 41.8781;
-const minLat = 38.6270;
+// trice coords
+// 41.8766389,-87.6505024
+// bedford park
+// 41.7733706,-87.7832374
 
-const maxLng = -87.6298;
-const minLng = -90.1994;
+const maxLat = 41.8766389;
+const minLat = 41.7733706;
+
+const maxLng = -87.6505024;
+const minLng = -87.7832374;
 let data = [];
 
 for (var x = 0; x < numOfAddresses; x++) {

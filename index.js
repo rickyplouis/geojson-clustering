@@ -1,6 +1,5 @@
 const fs = require('fs');
-const kClusters = 5;
-const maxIterations = 100;
+const kClusters = 4;
 const addresses = require('./addresses');
 const { data, minLat, minLng, maxLat, maxLng } = addresses;
 const getRandomFloat = require('./getRandomFloat');
@@ -49,9 +48,10 @@ const makeClusters = (centroids, data) => {
   for (let x = 0; x < data.length; x += 1) {
     let minCentroidIndex = 0;
     for (let y = 0; y < centroids.length; y += 1) {
-      //change index of closest centroid
+      // compare the distance between each centroid and find the index of the closest one
       let firstDist = euclideanDistance(data[x], centroids[minCentroidIndex])
       let secondDist = euclideanDistance(data[x], centroids[y]);
+      //change index of closest centroid
       if ( firstDist > secondDist) {
         minCentroidIndex = y;
       }
@@ -61,41 +61,40 @@ const makeClusters = (centroids, data) => {
       }
     }
   }
+  console.timeEnd('makeClusters');
   return clusters;
 }
 
 const makeCentroids = (cluster) => {
   let final =  cluster.map((clust) => {
-    const lat = clust.reduce((sum, acc) => getLat(acc) + sum, 0) / clust.length;
+    // handles empty clusters by making random centroid
+    if (clust.length === 0) {
+      return makeRandomCentroid(minLat, minLng, maxLat, maxLng)
+    }
+    const lat = (clust.reduce((sum, acc) => getLat(acc) + sum, 0) / clust.length);
     const lng = clust.reduce((sum, acc) => getLng(acc) + sum, 0) / clust.length;
-    const datapoint = {
-          "geometry": {
-              "type": "Point",
-              "coordinates": [
-                lng,
-                lat,
-              ]
-          },
-      }
-    return datapoint;
+    return makeDatapoint(lat, lng);
   })
   return final
 }
 
 const centroidsEqual = (first, second) => {
-  console.log('running centroidsEqual');
-  //console.log('centroidsEqual');
+  console.time('centroidsEqual')
   if (first.length !== second.length) {
     return false;
   }
   for (let x = 0; x < first.length; x += 1) {
     if (getLat(first[x]) !== getLat(second[x])) {
+      console.log(first[x])
+      console.log('getLat(first[x])', getLat(first[x]));
+      console.log('getLat(second[x])', getLat(second[x]));
       return false;
     }
     if (getLng(first[x]) !== getLng(second[x])) {
       return false;
     }
   }
+  console.timeEnd('centroidsEqual')
   return true;
 }
 
@@ -111,7 +110,10 @@ const clusterAnalysis = (k, dataset) => {
   let firstCluster = makeClusters(firstCentroid, dataset);
   let nextCentroid = makeCentroids(firstCluster);
   let nextCluster = makeClusters(nextCentroid, dataset);
-  return compareClusters(firstCluster, nextCluster, dataset);
+  console.time('compareClusters')
+  let res = compareClusters(firstCluster, nextCluster, dataset);
+  console.timeEnd('compareClusters')
+  return res;
 }
 
 const getRandomColor = () => {
@@ -125,27 +127,33 @@ const getRandomColor = () => {
 
 let newClusters = clusterAnalysis(kClusters, data);
 
-let json = {
-  "type": "FeatureCollection",
-  "features": []
-}
-
-let colors = [];
-
-for (var x = 0; x < kClusters; x++) {
-  colors.push(getRandomColor());
-}
-
-newClusters.map((cluster, index) => {
-  if (cluster.length > 0) {
-    for (let dp of cluster) {
-      let rndColor = getRandomColor();
-      dp.properties['marker-color'] = colors[index];
-      json.features.push(dp);
-    }
+const writeGEOJSON = (clusters) => {
+  console.time('writeGEOJSON');
+  let json = {
+    "type": "FeatureCollection",
+    "features": []
   }
-})
 
-fs.writeFile('test.geojson', JSON.stringify(json), (err, data) => {
-  if (err) throw err;
-})
+  let colors = [];
+
+  for (var x = 0; x < clusters.length; x++) {
+    colors.push(getRandomColor());
+  }
+
+  clusters.map((cluster, index) => {
+    if (cluster.length > 0) {
+      for (let dp of cluster) {
+        let rndColor = getRandomColor();
+        dp.properties['marker-color'] = colors[index];
+        json.features.push(dp);
+      }
+    }
+  })
+
+  fs.writeFile('test.geojson', JSON.stringify(json), (err, data) => {
+    if (err) throw err;
+    console.timeEnd('writeGEOJSON');
+  })
+}
+
+writeGEOJSON(newClusters);
