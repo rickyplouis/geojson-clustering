@@ -1,0 +1,25 @@
+{
+  "name": "geo-cluster",
+  "version": "1.0.0",
+  "description": "Clustering geoJSON with k-means",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rickyplouis/addressClustering.git"
+  },
+  "keywords": [
+    "k-means",
+    "geoJSON",
+    "clustering",
+    "machine-learning"
+  ],
+  "author": "rickyplouis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rickyplouis/addressClustering/issues"
+  },
+  "homepage": "https://github.com/rickyplouis/addressClustering#readme"
+}
