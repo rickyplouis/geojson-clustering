@@ -1,5 +1,5 @@
 const fs = require('fs');
-const kClusters = 6;
+const kClusters = 9;
 const addresses = require('./addresses');
 const { data, minLat, minLng, maxLat, maxLng } = addresses;
 const getRandomFloat = require('./getRandomFloat');
@@ -90,35 +90,22 @@ const centroidsEqual = (first, second) => {
   return true;
 }
 
+const compareClusters = (firstCluster, secondCluster, dataset) => {
+  let firstCentroid = makeCentroids(firstCluster);
+  let secondCentroid = makeCentroids(secondCluster);
+  return centroidsEqual(firstCentroid, secondCentroid) ?
+         secondCluster : compareClusters(makeClusters(firstCentroid, dataset), makeClusters(secondCentroid, dataset), dataset)
+}
+
 const clusterAnalysis = (k, dataset) => {
   let firstCentroid = initializeCentroids(k, dataset);
   let firstCluster = makeClusters(firstCentroid, dataset);
   let nextCentroid = makeCentroids(firstCluster);
   let nextCluster = makeClusters(nextCentroid, dataset);
-  while (!centroidsEqual(firstCentroid, nextCentroid)) {
-    firstCentroid = nextCentroid.map((centroid) => Object.assign({}, centroid));
-    firstCluster = makeClusters(firstCentroid, dataset);
-    nextCentroid = makeCentroids(firstCluster);
-    nextCluster = makeClusters(nextCentroid, dataset)
-  }
-  return nextCluster
+  return compareClusters(firstCluster, nextCluster, dataset);
 }
 
-const sortClusterByLat = (clusters) => {
-  return clusters.map((cluster) => {
-    return cluster.sort((a, b) => {
-      if (getLat(a) < getLat(b)) {
-        return -1
-      }
-      if (getLat(a) > getLat(b)) {
-        return 1;
-      }
-      return 0;
-    })
-  })
-}
-
-function getRandomColor() {
+const getRandomColor = () => {
   var letters = '0123456789ABCDEF';
   var color = '#';
   for (var i = 0; i < 6; i++) {

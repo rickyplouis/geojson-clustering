@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const getRandomFloat = require('./getRandomFloat');
-const numOfAddresses = 100
+const numOfAddresses = 1000
 
 // chicago 41.8781° N, 87.6298° W
 // st louis 38.6270° N, 90.1994° W
