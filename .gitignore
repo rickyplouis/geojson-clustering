@@ -1,6 +1,4 @@
 node_modules/
-test.geojson
-input.geojson
-output.geojson
+output/
 coverage/
 .coveralls.yml

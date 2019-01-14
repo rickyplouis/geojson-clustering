@@ -21,13 +21,17 @@ const { clusterAnalysis } = cluster;
 // bedford park
 // 41.7733706,-87.7832374
 
-const makeMockData = (numAddresses, minLat, minLng, maxLat, maxLng) => {
+const makeMockData = (numAddresses, initCoords) => {
   let data = [];
+  const { minimumLat, minimumLng, maximumLat, maximumLng } = initCoords;
   for (var x = 0; x < numAddresses; x++) {
     const datapoint = {
       geometry: {
         type: 'Point',
-        coordinates: [getRandomFloat(minLng, maxLng), getRandomFloat(minLat, maxLat)]
+        coordinates: [
+          getRandomFloat(minimumLng, maximumLng),
+          getRandomFloat(minimumLat, maximumLat)
+        ]
       },
       type: 'Feature',
       properties: {
@@ -64,7 +68,7 @@ const writeGEOJSON = clusters => {
     return cluster;
   });
 
-  fs.writeFile('output.geojson', JSON.stringify(json), err => {
+  fs.writeFile('output/output.geojson', JSON.stringify(json), err => {
     if (err) throw err;
   });
 };
@@ -72,6 +76,10 @@ const writeGEOJSON = clusters => {
 const getCmdClusters = args => {
   for (let arg of args) {
     if (arg.indexOf('clusters=') >= 0) {
+      return parseInt(arg.substring('clusters='.length), 10);
+    }
+
+    if (arg.indexOf('cluster=') >= 0) {
       return parseInt(arg.substring('clusters='.length), 10);
     }
   }
@@ -93,13 +101,15 @@ const main = () => {
   // If no file args then use mock data
   if (process.argv.length === 2) {
     // Use mock addresses to create input geojson file
-    let mockData = JSON.stringify(
-      makeMockData(numOfAddresses, minimumLat, minimumLng, maximumLat, maximumLng)
-    );
+    const startingCoords = { minimumLat, minimumLng, maximumLat, maximumLng };
+    let mockData = JSON.stringify(makeMockData(numOfAddresses, startingCoords));
+    if (!fs.existsSync('data')) {
+      fs.mkdirSync('data');
+    }
 
-    fs.writeFile('input.geojson', mockData, err => {
+    fs.writeFile('output/input.geojson', mockData, err => {
       if (err) throw err;
-      const inputData = JSON.parse(fs.readFileSync('./input.geojson'));
+      const inputData = JSON.parse(fs.readFileSync('output/input.geojson'));
       writeGEOJSON(clusterAnalysis(kClusters, inputData, maxIterations));
     });
   } else {
