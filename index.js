@@ -1,7 +1,7 @@
 const fs = require('fs');
-const random = require('./random');
-const cluster = require('./cluster');
-const constants = require('./constants');
+const random = require('./src/random');
+const cluster = require('./src/cluster');
+const constants = require('./src/constants');
 
 const {
   maximumLat,
