@@ -1,5 +1,5 @@
 const fs = require('fs');
-const kClusters = 2;
+const kClusters = 3;
 const numOfAddresses = 1000;
 const maxIterations = 1000;
 const getRandomFloat = require('./getRandomFloat');
@@ -205,6 +205,15 @@ const writeGEOJSON = (clusters) => {
   })
 }
 
+const getCmdClusters = (args) => {
+  for (let arg of args) {
+    if (arg.indexOf('clusters=') >= 0) {
+      return parseInt(arg.substring('clusters='.length));
+    }
+  }
+  return false
+}
+
 // if no file args then use mock data
 if (process.argv.length === 2 ) {
   console.log('process.argv', process.argv);
@@ -218,5 +227,6 @@ if (process.argv.length === 2 ) {
   const inputFile = JSON.parse(fs.readFileSync(process.argv[2]));
   // else there are args so use input filepath
   const inputData = inputFile.features
-  writeGEOJSON(clusterAnalysis(kClusters, inputData, maxIterations));
+  const inputClusters = getCmdClusters(process.argv) ? getCmdClusters(process.argv) : kClusters;
+  writeGEOJSON(clusterAnalysis(inputClusters, inputData, maxIterations));
 }
