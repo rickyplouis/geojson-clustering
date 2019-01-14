@@ -1,4 +1,4 @@
-const random = require('../random');
+const random = require('../src/random');
 const { getRandomColor, getRandomFloat } = random;
 
 test('test random float generator', () => {
