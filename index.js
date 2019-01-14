@@ -1,11 +1,41 @@
 const fs = require('fs');
 const kClusters = 12;
-const addresses = require('./addresses');
-const { minLat, minLng, maxLat, maxLng, data } = addresses;
+const numOfAddresses = 200;
+const maxIterations = 1000;
 const getRandomFloat = require('./getRandomFloat');
 
 const getLng = coord => coord.geometry.coordinates[0]
 const getLat = coord => coord.geometry.coordinates[1];
+
+// trice coords
+// 41.8766389,-87.6505024
+// bedford park
+// 41.7733706,-87.7832374
+
+const maxLat = 41.8766389;
+const minLat = 41.7733706;
+
+const maxLng = -87.6505024;
+const minLng = -87.7832374;
+let data = [];
+
+for (var x = 0; x < numOfAddresses; x++) {
+  const datapoint = {
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                getRandomFloat(minLng, maxLng),
+                getRandomFloat(minLat, maxLat)
+            ]
+        },
+        "type": "Feature",
+        "properties": {
+          "title": "index of " + x,
+          "marker-symbol": 'suitcase',
+        }
+    }
+  data.push(datapoint)
+}
 
 const makeDatapoint = (lat, lng) => {
   return {
@@ -53,7 +83,7 @@ const makeClusters = (centroids, data) => {
       let firstDist = euclideanDistance(data[x], centroids[minCentroidIndex])
       let secondDist = euclideanDistance(data[x], centroids[y]);
       //change index of closest centroid
-      if ( firstDist > secondDist) {
+      if ( firstDist >= secondDist) {
         minCentroidIndex = y;
       }
       // reached end of array, put data point in cluster of closest centroid
@@ -76,43 +106,43 @@ const makeCentroids = (cluster) => {
     const lng = clust.reduce((sum, acc) => getLng(acc) + sum, 0) / clust.length;
     return makeDatapoint(lat, lng);
   })
+  console.log('made centroid', JSON.stringify(final));
   return final
 }
 
 const centroidsEqual = (first, second) => {
-  console.time('centroidsEqual')
+  console.log('run centroidsEqual');
   if (first.length !== second.length) {
     return false;
   }
   for (let x = 0; x < first.length; x += 1) {
     if (getLat(first[x]) !== getLat(second[x])) {
-      console.log(first[x])
-      console.log('getLat(first[x])', getLat(first[x]));
-      console.log('getLat(second[x])', getLat(second[x]));
       return false;
     }
     if (getLng(first[x]) !== getLng(second[x])) {
       return false;
     }
   }
-  console.timeEnd('centroidsEqual')
   return true;
 }
 
-const compareClusters = (firstCluster, secondCluster, dataset) => {
+const compareClusters = (firstCluster, secondCluster, dataset, maxIter) => {
   let firstCentroid = makeCentroids(firstCluster);
   let secondCentroid = makeCentroids(secondCluster);
-  return centroidsEqual(firstCentroid, secondCentroid) ?
-         secondCluster : compareClusters(makeClusters(firstCentroid, dataset), makeClusters(secondCentroid, dataset), dataset)
+  if (maxIter > 0) {
+    return centroidsEqual(firstCentroid, secondCentroid) ?
+      secondCluster : compareClusters(makeClusters(firstCentroid, dataset), makeClusters(secondCentroid, dataset), dataset, maxIter -= 1)
+  }
+  return secondCluster;
 }
 
-const clusterAnalysis = (k, dataset) => {
+const clusterAnalysis = (k, dataset, maxIter) => {
   let firstCentroid = initializeCentroids(k, dataset);
   let firstCluster = makeClusters(firstCentroid, dataset);
   let nextCentroid = makeCentroids(firstCluster);
   let nextCluster = makeClusters(nextCentroid, dataset);
   console.time('compareClusters')
-  let res = compareClusters(firstCluster, nextCluster, dataset);
+  let res = compareClusters(firstCluster, nextCluster, dataset, maxIter);
   console.timeEnd('compareClusters')
   return res;
 }
@@ -151,13 +181,14 @@ const writeGEOJSON = (clusters) => {
 
   fs.writeFile('output.geojson', JSON.stringify(json), (err, data) => {
     if (err) throw err;
-    console.timeEnd('writeGEOJSON');
   })
 }
 
 //use mock addresses to create input geojson file
 fs.writeFile('input.geojson', JSON.stringify(data), (err, data) => {
   if (err) throw err;
-  const inputData = JSON.parse(fs.readFileSync('./input.geojson'));
-  writeGEOJSON(clusterAnalysis(kClusters, inputData));
+  for (let x = 0; x < 10; x ++) {
+    const inputData = JSON.parse(fs.readFileSync('./input.geojson'));
+    writeGEOJSON(clusterAnalysis(kClusters, inputData, maxIterations));
+  }
 })
