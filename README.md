@@ -1,4 +1,4 @@
-## addressclustering
+## addressclustering [![Build Status](https://travis-ci.org/rickyplouis/addressClustering.svg?branch=master)](https://travis-ci.org/rickyplouis/addressClustering)
 
 A tool built to allow k-means clustering of geoJSON data.
 
