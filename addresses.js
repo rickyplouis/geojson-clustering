@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const getRandomFloat = require('./getRandomFloat');
-const numOfAddresses = 50
+const numOfAddresses = 200
 
 // trice coords
 // 41.8766389,-87.6505024

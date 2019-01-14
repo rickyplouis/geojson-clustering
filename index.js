@@ -1,5 +1,5 @@
 const fs = require('fs');
-const kClusters = 4;
+const kClusters = 12;
 const addresses = require('./addresses');
 const { data, minLat, minLng, maxLat, maxLng } = addresses;
 const getRandomFloat = require('./getRandomFloat');
@@ -150,7 +150,7 @@ const writeGEOJSON = (clusters) => {
     }
   })
 
-  fs.writeFile('test.geojson', JSON.stringify(json), (err, data) => {
+  fs.writeFile('output.geojson', JSON.stringify(json), (err, data) => {
     if (err) throw err;
     console.timeEnd('writeGEOJSON');
   })
