@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 
-const filesToDelete = ['output.geojson'];
+const filesToDelete = ['input.geojson', 'output.geojson'];
 
 for (let file of filesToDelete) {
   fs.unlink(file, (err) => {

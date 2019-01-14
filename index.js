@@ -1,7 +1,7 @@
 const fs = require('fs');
 const kClusters = 12;
 const addresses = require('./addresses');
-const { data, minLat, minLng, maxLat, maxLng } = addresses;
+const { minLat, minLng, maxLat, maxLng, data } = addresses;
 const getRandomFloat = require('./getRandomFloat');
 
 const getLng = coord => coord.geometry.coordinates[0]
@@ -18,6 +18,7 @@ const makeDatapoint = (lat, lng) => {
     }
   }
 }
+
 
 const euclideanDistance = (coordA, coordB) => {
   let latA = getLat(coordA)
@@ -125,8 +126,6 @@ const getRandomColor = () => {
   return color;
 }
 
-let newClusters = clusterAnalysis(kClusters, data);
-
 const writeGEOJSON = (clusters) => {
   console.time('writeGEOJSON');
   let json = {
@@ -156,4 +155,9 @@ const writeGEOJSON = (clusters) => {
   })
 }
 
-writeGEOJSON(newClusters);
+//use mock addresses to create input geojson file
+fs.writeFile('input.geojson', JSON.stringify(data), (err, data) => {
+  if (err) throw err;
+  const inputData = JSON.parse(fs.readFileSync('./input.geojson'));
+  writeGEOJSON(clusterAnalysis(kClusters, inputData));
+})
