@@ -1,6 +1,6 @@
 const fs = require('fs');
 const kClusters = 12;
-const numOfAddresses = 200;
+const numOfAddresses = 1000;
 const maxIterations = 1000;
 const getRandomFloat = require('./getRandomFloat');
 
@@ -17,24 +17,27 @@ const minLat = 41.7733706;
 
 const maxLng = -87.6505024;
 const minLng = -87.7832374;
-let data = [];
 
-for (var x = 0; x < numOfAddresses; x++) {
-  const datapoint = {
-        "geometry": {
-            "type": "Point",
-            "coordinates": [
-                getRandomFloat(minLng, maxLng),
-                getRandomFloat(minLat, maxLat)
-            ]
-        },
-        "type": "Feature",
-        "properties": {
-          "title": "index of " + x,
-          "marker-symbol": 'suitcase',
-        }
-    }
-  data.push(datapoint)
+const makeMockData = (numAddresses, min_lat, min_lng, max_lat, max_lng) => {
+  let data = [];
+  for (var x = 0; x < numAddresses; x++) {
+    const datapoint = {
+          "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  getRandomFloat(min_lng, max_lng),
+                  getRandomFloat(min_lat, max_lat)
+              ]
+          },
+          "type": "Feature",
+          "properties": {
+            "title": "index of " + x,
+            "marker-symbol": 'suitcase',
+          }
+      }
+    data.push(datapoint)
+  }
+  return data
 }
 
 const makeDatapoint = (lat, lng) => {
@@ -106,12 +109,10 @@ const makeCentroids = (cluster) => {
     const lng = clust.reduce((sum, acc) => getLng(acc) + sum, 0) / clust.length;
     return makeDatapoint(lat, lng);
   })
-  console.log('made centroid', JSON.stringify(final));
   return final
 }
 
 const centroidsEqual = (first, second) => {
-  console.log('run centroidsEqual');
   if (first.length !== second.length) {
     return false;
   }
@@ -185,10 +186,8 @@ const writeGEOJSON = (clusters) => {
 }
 
 //use mock addresses to create input geojson file
-fs.writeFile('input.geojson', JSON.stringify(data), (err, data) => {
+fs.writeFile('input.geojson', JSON.stringify(makeMockData(numOfAddresses, minLat, minLng, maxLat, maxLng)), (err, data) => {
   if (err) throw err;
-  for (let x = 0; x < 10; x ++) {
-    const inputData = JSON.parse(fs.readFileSync('./input.geojson'));
-    writeGEOJSON(clusterAnalysis(kClusters, inputData, maxIterations));
-  }
+  const inputData = JSON.parse(fs.readFileSync('./input.geojson'));
+  writeGEOJSON(clusterAnalysis(kClusters, inputData, maxIterations));
 })
