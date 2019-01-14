@@ -9,7 +9,7 @@
     "precommit": "lint-staged",
     "test": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "start": "node index.js",
-    "clean": "node clean.js"
+    "clean": "node src/clean.js"
   },
   "jest": {
     "testEnvironment": "node",

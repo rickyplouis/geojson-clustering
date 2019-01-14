@@ -103,8 +103,8 @@ const main = () => {
     // Use mock addresses to create input geojson file
     const startingCoords = { minimumLat, minimumLng, maximumLat, maximumLng };
     let mockData = JSON.stringify(makeMockData(numOfAddresses, startingCoords));
-    if (!fs.existsSync('data')) {
-      fs.mkdirSync('data');
+    if (!fs.existsSync('output')) {
+      fs.mkdirSync('output');
     }
 
     fs.writeFile('output/input.geojson', mockData, err => {
