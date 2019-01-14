@@ -12,8 +12,6 @@ const getLat = coord => coord.geometry.coordinates[1];
 // bedford park
 // 41.7733706,-87.7832374
 
-// testing travis build
-
 const maximumLat = 41.8766389;
 const minimumLat = 41.7733706;
 
