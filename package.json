@@ -4,9 +4,48 @@
   "description": "Clustering geoJSON with k-means",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "nsp check",
+    "pretest": "eslint .",
+    "precommit": "lint-staged",
+    "test": "jest --coverage",
+    "testLocally": "jest --coverage",
     "start": "node index.js",
     "clean": "node clean.js"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.json": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "xo",
+      "prettier"
+    ],
+    "env": {
+      "jest": true,
+      "node": true
+    },
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "singleQuote": true,
+          "printWidth": 90
+        }
+      ]
+    },
+    "plugins": [
+      "prettier"
+    ]
   },
   "repository": {
     "type": "git",
@@ -24,4 +63,13 @@
     "url": "https://github.com/rickyplouis/addressClustering/issues"
   },
   "homepage": "https://github.com/rickyplouis/addressClustering#readme",
+  "devDependencies": {
+    "coveralls": "^3.0.2",
+    "eslint": "^5.12.0",
+    "eslint-config-prettier": "^3.4.0",
+    "eslint-config-xo": "^0.26.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "jest": "^23.6.0",
+    "prettier": "^1.15.3"
+  }
 }

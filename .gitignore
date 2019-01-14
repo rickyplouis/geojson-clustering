@@ -1,3 +1,5 @@
+node_modules/
 test.geojson
 input.geojson
 output.geojson
+coverage/
