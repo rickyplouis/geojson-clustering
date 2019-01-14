@@ -3,3 +3,4 @@ test.geojson
 input.geojson
 output.geojson
 coverage/
+.coveralls.yml
