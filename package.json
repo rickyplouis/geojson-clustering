@@ -7,13 +7,13 @@
     "prepublishOnly": "nsp check",
     "pretest": "eslint .",
     "precommit": "lint-staged",
-    "test": "jest --coverage",
-    "testLocally": "jest --coverage",
+    "test": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "start": "node index.js",
     "clean": "node clean.js"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "collectCoverage": true
   },
   "lint-staged": {
     "*.js": [

@@ -1,3 +1,6 @@
+const getRandomFloat = require('../getRandomFloat');
+
 test('adds numbers', () => {
-  expect(1 + 1).toEqual(2);
+  expect(getRandomFloat(1, 2)).toBeGreaterThan(1);
+  expect(getRandomFloat(1, 2)).toBeLessThan(2);
 });

@@ -1,6 +1,6 @@
 const fs = require('fs');
-const kClusters = 3;
-const numOfAddresses = 1000;
+const kClusters = 5;
+const numOfAddresses = 50;
 const maxIterations = 1000;
 const getRandomFloat = require('./getRandomFloat');
 
