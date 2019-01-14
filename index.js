@@ -148,6 +148,7 @@ const centroidsEqual = (first, second) => {
 }
 
 const compareClusters = (firstCluster, secondCluster, dataset, maxIter) => {
+  console.log('compareClusters::maxIter', maxIter);
   let firstCentroid = makeCentroids(firstCluster);
   let secondCentroid = makeCentroids(secondCluster);
   if (maxIter > 0) {
@@ -162,9 +163,7 @@ const clusterAnalysis = (k, dataset, maxIter) => {
   let firstCluster = makeClusters(firstCentroid, dataset);
   let nextCentroid = makeCentroids(firstCluster);
   let nextCluster = makeClusters(nextCentroid, dataset);
-  console.time('compareClusters')
   let res = compareClusters(firstCluster, nextCluster, dataset, maxIter);
-  console.timeEnd('compareClusters')
   return res;
 }
 
@@ -214,19 +213,36 @@ const getCmdClusters = (args) => {
   return false
 }
 
-// if no file args then use mock data
-if (process.argv.length === 2 ) {
-  console.log('process.argv', process.argv);
-  //use mock addresses to create input geojson file
-  fs.writeFile('input.geojson', JSON.stringify(makeMockData(numOfAddresses, minLat, minLng, maxLat, maxLng)), (err, data) => {
-    if (err) throw err;
-    const inputData = JSON.parse(fs.readFileSync('./input.geojson'));
-    writeGEOJSON(clusterAnalysis(kClusters, inputData, maxIterations));
-  })
-} else {
-  const inputFile = JSON.parse(fs.readFileSync(process.argv[2]));
-  // else there are args so use input filepath
-  const inputData = inputFile.features
-  const inputClusters = getCmdClusters(process.argv) ? getCmdClusters(process.argv) : kClusters;
-  writeGEOJSON(clusterAnalysis(inputClusters, inputData, maxIterations));
+const getCmdIterations = (args) => {
+  for (let arg of args) {
+    if (arg.indexOf('max=') >= 0) {
+      console.log('got max');
+      return parseInt(arg.substring('max='.length));
+    }
+  }
+  console.log('didnt get maxIter');
+  return false
 }
+
+
+const main = () => {
+  // if no file args then use mock data
+  if (process.argv.length === 2 ) {
+    //use mock addresses to create input geojson file
+    fs.writeFile('input.geojson', JSON.stringify(makeMockData(numOfAddresses, minLat, minLng, maxLat, maxLng)), (err, data) => {
+      if (err) throw err;
+      const inputData = JSON.parse(fs.readFileSync('./input.geojson'));
+      writeGEOJSON(clusterAnalysis(kClusters, inputData, maxIterations));
+    })
+  } else {
+    const inputFile = JSON.parse(fs.readFileSync(process.argv[2]));
+    // else there are args so use input filepath
+    const inputData = inputFile.features
+    const inputClusters = getCmdClusters(process.argv) ? getCmdClusters(process.argv) : kClusters;
+    const inputIterations = getCmdIterations(process.argv) ? getCmdIterations(process.argv) : maxIterations;
+    writeGEOJSON(clusterAnalysis(inputClusters, inputData, inputIterations));
+  }
+}
+
+
+main();
