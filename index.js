@@ -16,6 +16,8 @@ const {
 const { getRandomColor, getRandomFloat } = random;
 const { clusterAnalysis } = cluster;
 
+let unusedVariable = 'truuuu';
+
 // Trice coords
 // 41.8766389,-87.6505024
 // bedford park
