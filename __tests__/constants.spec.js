@@ -12,7 +12,7 @@ const {
 
 test('ensure all constants exist', () => {
   expect(typeof maximumLat).toBe('number');
-  expect(typeof minimumLat).toBe('string');
+  expect(typeof minimumLat).toBe('number');
   expect(typeof maximumLng).toBe('number');
   expect(typeof minimumLng).toBe('number');
   expect(typeof kClusters).toBe('number');
