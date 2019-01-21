@@ -48,7 +48,9 @@
     ]
   },
   "husky": {
-    "pre-commit": "npm test"
+    "hooks": {
+      "pre-commit": "npm run test"
+    }
   },
   "repository": {
     "type": "git",
