@@ -6,6 +6,7 @@
   "scripts": {
     "prepublishOnly": "nsp check",
     "pretest": "eslint .",
+    "prepush": "npm run test",
     "precommit": "lint-staged && npm run test",
     "test": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "start": "node index.js",
