@@ -1,7 +1,24 @@
-const getLng = coord => coord.geometry.coordinates[0];
-const getLat = coord => coord.geometry.coordinates[1];
+const getLng = coord => {
+  if ('geometry' in coord) {
+    if ('coordinates' in coord.geometry) {
+      return coord.geometry.coordinates[0];
+    }
+  }
 
-const euclideanDistance = (coordA, coordB) => {
+  return 0;
+};
+
+const getLat = coord => {
+  if ('geometry' in coord) {
+    if ('coordinates' in coord.geometry) {
+      return coord.geometry.coordinates[1];
+    }
+  }
+
+  return 0;
+};
+
+const euclideanDistance = (coordA = {}, coordB = {}) => {
   let latA = getLat(coordA);
   let latB = getLat(coordB);
   let lngA = getLng(coordA);
@@ -9,7 +26,7 @@ const euclideanDistance = (coordA, coordB) => {
   return Math.sqrt(Math.pow(latA - latB, 2) + Math.pow(lngA - lngB, 2));
 };
 
-const getMin = (data, prop) => {
+const getMin = (data = [{}], prop) => {
   let initialVal = prop === 'lat' ? getLat(data[0]) : getLng(data[0]);
   return data.reduce((min, acc) => {
     let currVal = prop === 'lat' ? getLat(acc) : getLng(acc);
@@ -17,7 +34,7 @@ const getMin = (data, prop) => {
   }, initialVal);
 };
 
-const getMax = (data, prop) => {
+const getMax = (data = [{}], prop) => {
   let initialVal = prop === 'lat' ? getLat(data[0]) : getLng(data[0]);
   return data.reduce((max, acc) => {
     let currVal = prop === 'lat' ? getLat(acc) : getLng(acc);
