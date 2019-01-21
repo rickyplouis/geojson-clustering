@@ -6,7 +6,7 @@
   "scripts": {
     "prepublishOnly": "nsp check",
     "pretest": "eslint .",
-    "precommit": "lint-staged",
+    "precommit": "lint-staged && npm run test",
     "test": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "start": "node index.js",
     "clean": "node src/clean.js"
@@ -46,11 +46,6 @@
     "plugins": [
       "prettier"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run test"
-    }
   },
   "repository": {
     "type": "git",
