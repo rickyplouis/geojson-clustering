@@ -22,7 +22,10 @@ const { clusterAnalysis } = cluster;
 // 41.7733706,-87.7832374
 
 const makeMockData = (numAddresses, initCoords) => {
-  let data = [];
+  let data = {
+    type: 'FeatureCollection',
+    features: []
+  };
   const { minimumLat, minimumLng, maximumLat, maximumLng } = initCoords;
   for (var x = 0; x < numAddresses; x++) {
     const datapoint = {
@@ -39,7 +42,7 @@ const makeMockData = (numAddresses, initCoords) => {
         'marker-symbol': 'suitcase'
       }
     };
-    data.push(datapoint);
+    data.features.push(datapoint);
   }
 
   return data;
@@ -110,7 +113,7 @@ const main = () => {
     fs.writeFile('output/input.geojson', mockData, err => {
       if (err) throw err;
       const inputData = JSON.parse(fs.readFileSync('output/input.geojson'));
-      writeGEOJSON(clusterAnalysis(kClusters, inputData, maxIterations));
+      writeGEOJSON(clusterAnalysis(kClusters, inputData.features, maxIterations));
     });
   } else {
     const inputFile = JSON.parse(fs.readFileSync(process.argv[2]));

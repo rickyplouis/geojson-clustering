@@ -52,9 +52,10 @@ const makeCentroids = cluster => {
       return makeRandomCentroid(minimumLat, minimumLng, maximumLat, maximumLng);
     }
 
-    const lat = clust.reduce((sum, acc) => getLat(acc) + sum, 0) / clust.length;
-    const lng = clust.reduce((sum, acc) => getLng(acc) + sum, 0) / clust.length;
-    return makeDatapoint(lat, lng);
+    // Computes average lat and average lng of the cluster to create new centroid
+    const avgLat = clust.reduce((sum, acc) => getLat(acc) + sum, 0) / clust.length;
+    const avgLng = clust.reduce((sum, acc) => getLng(acc) + sum, 0) / clust.length;
+    return makeDatapoint(avgLat, avgLng);
   });
 };
 

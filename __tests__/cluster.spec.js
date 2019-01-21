@@ -1,6 +1,6 @@
 const cluster = require('../src/cluster');
 
-const { makeDatapoint, centroidsEqual } = cluster;
+const { makeDatapoint, centroidsEqual, makeRandomCentroid } = cluster;
 
 const testDP = {
   geometry: {
@@ -13,12 +13,19 @@ const firstCentroid = [makeDatapoint(0, 0)];
 const secondCentroid = [makeDatapoint(0, 1)];
 const thirdCentroid = [makeDatapoint(1, 1)];
 
-test('makeDatapoint', () => {
+test('makeDatapoint()', () => {
   expect(makeDatapoint(0, 0)).toMatchObject(testDP);
 });
 
-test('centroidsEqual', () => {
+test('centroidsEqual()', () => {
   expect(centroidsEqual(firstCentroid, firstCentroid)).toBe(true);
   expect(centroidsEqual(firstCentroid, secondCentroid)).toBe(false);
   expect(centroidsEqual(firstCentroid, thirdCentroid)).toBe(false);
+});
+
+test('makeRandomCentroid()', () => {
+  expect(makeRandomCentroid(0, 0, 100, 100)).toHaveProperty('geometry');
+  expect(makeRandomCentroid(0, 0, 100, 100).geometry).toHaveProperty('coordinates');
+  expect(makeRandomCentroid(0, 0, 100, 100).geometry).toHaveProperty('type', 'Point');
+  expect(makeRandomCentroid(0, 0, 100, 100).geometry).toHaveProperty('type', 'Point');
 });
