@@ -101,8 +101,9 @@ const getCmdIterations = args => {
 };
 
 const main = () => {
+  const noArgs = process.argv.length === 2;
   // If no file args then use mock data
-  if (process.argv.length === 2) {
+  if (noArgs) {
     // Use mock addresses to create input geojson file
     const startingCoords = { minimumLat, minimumLng, maximumLat, maximumLng };
     let mockData = JSON.stringify(makeMockData(numOfAddresses, startingCoords));

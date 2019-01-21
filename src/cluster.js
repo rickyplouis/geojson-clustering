@@ -5,7 +5,7 @@ const { getRandomFloat } = random;
 const { euclideanDistance, getLat, getLng, getMin, getMax } = geomath;
 const { maximumLat, maximumLng, minimumLat, minimumLng } = constants;
 
-const makeClusters = (centroids, data) => {
+const makeClusters = (centroids = [], data = []) => {
   let clusters = [];
   for (let n = 0; n < centroids.length; n += 1) {
     clusters.push([]);
