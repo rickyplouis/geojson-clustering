@@ -1,10 +1,10 @@
 {
-  "name": "geo-cluster",
-  "version": "1.0.0",
+  "name": "geojson-clustering",
+  "version": "1.1.0",
   "description": "Clustering geoJSON with k-means",
   "main": "index.js",
   "scripts": {
-    "prepublishOnly": "nsp check",
+    "prepublishOnly": "nsp audit --audit-level high",
     "pretest": "eslint .",
     "precommit": "lint-staged && npm run test",
     "test": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
