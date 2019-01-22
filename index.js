@@ -8,11 +8,6 @@ const { maximumLat, maximumLng, minimumLat, minimumLng, numOfAddresses } = const
 const { getRandomColor, makeMockData } = random;
 const { clusterAnalysis } = cluster;
 
-// Trice coords
-// 41.8766389,-87.6505024
-// bedford park
-// 41.7733706,-87.7832374
-
 const tagClustersWithColor = clusters => {
   let colors = [];
 
@@ -21,13 +16,10 @@ const tagClustersWithColor = clusters => {
   }
 
   return clusters.map((cluster, index) => {
-    if (cluster.length > 0) {
-      for (let dp of cluster) {
-        dp.properties['marker-color'] = colors[index];
-      }
-    }
-
-    return cluster;
+    return cluster.map(datapoint => {
+      datapoint.properties['marker-color'] = colors[index];
+      return datapoint;
+    });
   });
 };
 
@@ -53,7 +45,7 @@ const writeGEOJSON = untaggedClusters => {
     fs.mkdirSync('output');
   }
 
-  fs.writeFile('output/isfilepath.geojson', JSON.stringify(geojson), err => {
+  fs.writeFile('output/output.geojson', JSON.stringify(geojson), err => {
     if (err) throw err;
   });
 };
@@ -86,15 +78,37 @@ const writeClustersToFile = (inputData = '', k = 3, maxIterations = 1000) => {
     }
 
     if (typeof inputData === 'object') {
-      console.log('reached');
       let clusters = tagClustersWithColor(
         clusterAnalysis(k, inputData.features, maxIterations)
       );
-      return makeGEOJSON(clusters);
+      let stringifiedGEOJSON = JSON.stringify(makeGEOJSON(clusters));
+      fs.writeFile('output/isVariable.geojson', stringifiedGEOJSON, err => {
+        if (err) throw err;
+      });
     }
   }
 };
 
+const createClusters = (inputData = '', k = 3, maxIterations = 1000) => {
+  if (isTypeOfFilePath(inputData)) {
+    // Else there are args so use input inputData
+    const inputFile = JSON.parse(fs.readFileSync(inputData));
+
+    let clusters = tagClustersWithColor(
+      clusterAnalysis(k, inputFile.features, maxIterations)
+    );
+    return makeGEOJSON(clusters);
+  }
+
+  if (typeof inputData === 'object') {
+    let clusters = tagClustersWithColor(
+      clusterAnalysis(k, inputData.features, maxIterations)
+    );
+    return makeGEOJSON(clusters);
+  }
+};
+
 module.exports = {
-  writeClustersToFile
+  writeClustersToFile,
+  createClusters
 };
