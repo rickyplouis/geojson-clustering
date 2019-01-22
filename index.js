@@ -82,7 +82,7 @@ const writeClustersToFile = (inputData = '', k = 3, maxIterations = 1000) => {
         clusterAnalysis(k, inputData.features, maxIterations)
       );
       let stringifiedGEOJSON = JSON.stringify(makeGEOJSON(clusters));
-      fs.writeFile('output/isVariable.geojson', stringifiedGEOJSON, err => {
+      fs.writeFile('output/output.geojson', stringifiedGEOJSON, err => {
         if (err) throw err;
       });
     }
