@@ -46,4 +46,4 @@ createClusters(geojsonData, numClusters, maxIterations);
 * k- number of clusters (default: 3)
 * maxIter- maximum number of iterations for the centroid algorithm (default: 1000)
 
-#### You can download use sample .geojson data located [here](https://github.com/rickyplouis/geojson-clustering/tree/master/sampleData)
+#### You can use sample .geojson data located [here](https://github.com/rickyplouis/geojson-clustering/tree/master/sampleData)
