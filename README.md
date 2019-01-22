@@ -16,10 +16,7 @@ $ npm i geojson-clustering
 ```javascript
 const geoclustering = require(geojson-clustering);
 
-const {
-	writeClustersToFile,
-	createClusters
-} = geoclustering
+const { writeClustersToFile, createClusters } = geoclustering
 
 // writeClustersToFile generates a new file
 // at location output/output.geoson
@@ -31,10 +28,12 @@ writeClustersToFile();
 
 /* Run with existing geojson file*/
 writeClustersToFile(pathToFile, numClusters, maxIterations);
+
 createClusters(pathToFile, numClusters, maxIterations);
 
 /* Run with .geojson data*/
 writeClustersToFile(geojsonData, numClusters, maxIterations);
+
 createClusters(geojsonData, numClusters, maxIterations);
 ```
 ## Methods
@@ -47,5 +46,4 @@ createClusters(geojsonData, numClusters, maxIterations);
 * k- number of clusters (default: 3)
 * maxIter- maximum number of iterations for the centroid algorithm (default: 1000)
 
-## Sample Data
-If you want to get started quickly you can go to the [ repo](https://github.com/rickyplouis/geojson-clustering) and sampleData directory to begin experimenting.
+#### You can download use sample .geojson data located [here](https://github.com/rickyplouis/geojson-clustering/tree/master/sampleData)
