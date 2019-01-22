@@ -12,7 +12,35 @@ const getRandomColor = () => {
   return color;
 };
 
+const makeMockData = (numAddresses, initCoords) => {
+  let data = {
+    type: 'FeatureCollection',
+    features: []
+  };
+  const { minimumLat, minimumLng, maximumLat, maximumLng } = initCoords;
+  for (var x = 0; x < numAddresses; x++) {
+    const datapoint = {
+      geometry: {
+        type: 'Point',
+        coordinates: [
+          getRandomFloat(minimumLng, maximumLng),
+          getRandomFloat(minimumLat, maximumLat)
+        ]
+      },
+      type: 'Feature',
+      properties: {
+        title: 'index of ' + x,
+        'marker-symbol': 'suitcase'
+      }
+    };
+    data.features.push(datapoint);
+  }
+
+  return data;
+};
+
 module.exports = {
   getRandomColor,
-  getRandomFloat
+  getRandomFloat,
+  makeMockData
 };

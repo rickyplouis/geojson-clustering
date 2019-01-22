@@ -5,7 +5,7 @@ const constants = require('./src/constants');
 
 const { maximumLat, maximumLng, minimumLat, minimumLng, numOfAddresses } = constants;
 
-const { getRandomColor, getRandomFloat } = random;
+const { getRandomColor, makeMockData } = random;
 const { clusterAnalysis } = cluster;
 
 // Trice coords
@@ -13,65 +13,59 @@ const { clusterAnalysis } = cluster;
 // bedford park
 // 41.7733706,-87.7832374
 
-const makeMockData = (numAddresses, initCoords) => {
-  let data = {
-    type: 'FeatureCollection',
-    features: []
-  };
-  const { minimumLat, minimumLng, maximumLat, maximumLng } = initCoords;
-  for (var x = 0; x < numAddresses; x++) {
-    const datapoint = {
-      geometry: {
-        type: 'Point',
-        coordinates: [
-          getRandomFloat(minimumLng, maximumLng),
-          getRandomFloat(minimumLat, maximumLat)
-        ]
-      },
-      type: 'Feature',
-      properties: {
-        title: 'index of ' + x,
-        'marker-symbol': 'suitcase'
-      }
-    };
-    data.features.push(datapoint);
-  }
-
-  return data;
-};
-
-const writeGEOJSON = clusters => {
-  let json = {
-    type: 'FeatureCollection',
-    features: []
-  };
-
+const tagClustersWithColor = clusters => {
   let colors = [];
 
   for (var x = 0; x < clusters.length; x++) {
     colors.push(getRandomColor());
   }
 
-  clusters.map((cluster, index) => {
+  return clusters.map((cluster, index) => {
     if (cluster.length > 0) {
       for (let dp of cluster) {
         dp.properties['marker-color'] = colors[index];
-        json.features.push(dp);
       }
     }
 
     return cluster;
   });
+};
 
-  fs.writeFile('output/output.geojson', JSON.stringify(json), err => {
+const makeGEOJSON = clusters => {
+  let json = {
+    type: 'FeatureCollection',
+    features: []
+  };
+  clusters.map(cluster => {
+    return cluster.map(datapoint => {
+      json.features.push(datapoint);
+      return json;
+    });
+  });
+  return json;
+};
+
+const writeGEOJSON = untaggedClusters => {
+  let taggedClusters = tagClustersWithColor(untaggedClusters);
+
+  let geojson = makeGEOJSON(taggedClusters);
+  if (!fs.existsSync('output')) {
+    fs.mkdirSync('output');
+  }
+
+  fs.writeFile('output/isfilepath.geojson', JSON.stringify(geojson), err => {
     if (err) throw err;
   });
 };
 
-const writeClustersToFile = (filepath = '', k = 3, maxIterations = 1000) => {
+const isTypeOfFilePath = inputVar =>
+  typeof inputVar === 'string' &&
+  (inputVar.indexOf('.json') > 0 || inputVar.indexOf('.geojson') > 0);
+
+const writeClustersToFile = (inputData = '', k = 3, maxIterations = 1000) => {
   // If no file args then use mock data
-  if (filepath.length === 0) {
-    // Use mock addresses to create input geojson file
+  if (inputData.length === 0) {
+    // Use mock file to create input geojson file
     const startingCoords = { minimumLat, minimumLng, maximumLat, maximumLng };
     let mockData = JSON.stringify(makeMockData(numOfAddresses, startingCoords));
     if (!fs.existsSync('output')) {
@@ -84,10 +78,20 @@ const writeClustersToFile = (filepath = '', k = 3, maxIterations = 1000) => {
       writeGEOJSON(clusterAnalysis(k, inputData.features, maxIterations));
     });
   } else {
-    // Else there are args so use input filepath
-    const inputFile = JSON.parse(fs.readFileSync(filepath));
-    const inputData = inputFile.features;
-    writeGEOJSON(clusterAnalysis(k, inputData, maxIterations));
+    if (isTypeOfFilePath(inputData)) {
+      // Else there are args so use input inputData
+      const inputFile = JSON.parse(fs.readFileSync(inputData));
+      const clusterData = inputFile.features;
+      writeGEOJSON(clusterAnalysis(k, clusterData, maxIterations));
+    }
+
+    if (typeof inputData === 'object') {
+      console.log('reached');
+      let clusters = tagClustersWithColor(
+        clusterAnalysis(k, inputData.features, maxIterations)
+      );
+      return makeGEOJSON(clusters);
+    }
   }
 };
 
