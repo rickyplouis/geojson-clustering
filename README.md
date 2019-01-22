@@ -1,5 +1,5 @@
 
-## geojson-clustering [![Build Status](https://travis-ci.org/rickyplouis/addressClustering.svg?branch=master)](https://travis-ci.org/rickyplouis/addressClustering) [![Coverage Status](https://coveralls.io/repos/github/rickyplouis/geojson-clustering/badge.svg?branch=master)](https://coveralls.io/github/rickyplouis/geojson-clustering?branch=master)
+## geojson-clustering [![Build Status](https://travis-ci.org/rickyplouis/addressClustering.svg?branch=master)](https://travis-ci.org/rickyplouis/addressClustering) [![Coverage Status](https://coveralls.io/repos/github/rickyplouis/geojson-clustering/badge.svg?branch=master)](https://coveralls.io/github/rickyplouis/geojson-clustering?branch=master) [![npm version](https://badge.fury.io/js/geojson-clustering.svg)](https://badge.fury.io/js/geojson-clustering)
 
 ### What is geojson-clustering
 A tool built to allow k-means clustering of geojson data.
