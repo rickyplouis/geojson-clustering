@@ -12,12 +12,12 @@ const getRandomColor = () => {
   return color;
 };
 
-const makeMockData = (numAddresses, initCoords) => {
+const makeMockData = (numAddresses = 0, initCoords = {}) => {
   let data = {
     type: 'FeatureCollection',
     features: []
   };
-  const { minimumLat, minimumLng, maximumLat, maximumLng } = initCoords;
+  const { minimumLat = 0, minimumLng = 0, maximumLat = 0, maximumLng = 0 } = initCoords;
   for (var x = 0; x < numAddresses; x++) {
     const datapoint = {
       geometry: {
