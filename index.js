@@ -100,7 +100,7 @@ const getCmdIterations = args => {
   return false;
 };
 
-const main = () => {
+const writeClustersToFile = () => {
   const noArgs = process.argv.length === 2;
   // If no file args then use mock data
   if (noArgs) {
@@ -132,4 +132,4 @@ const main = () => {
   }
 };
 
-main();
+module.exports = writeClustersToFile;
