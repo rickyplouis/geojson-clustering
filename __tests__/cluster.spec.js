@@ -1,3 +1,4 @@
+/* eslint no-undef:  */
 const cluster = require('../src/cluster');
 const random = require('../src/random');
 
